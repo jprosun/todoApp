@@ -1,0 +1,93 @@
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: aquamarine;
+  width: 100%;
+  overflow: hidden;
+}
+
+.login {
+  position: absolute;
+  width: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+  background-color: white;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.login__title {
+  font-size: 2em;
+  color: #000000;
+}
+
+.login__input-wrapper {
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login__input {
+  position: relative;
+  width: 100%;
+  padding: 12px 20px;
+  background: transparent;
+  border: 2px solid #351e1e;
+  border-radius: 40px;
+  font-size: 1.2em;
+  color: #000000;
+  box-shadow: none;
+  outline: none;
+}
+
+.login__submit-button {
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+  height: 2.5rem;
+  background: #616161;
+  border: none;
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+.login__input::placeholder {
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.login__links {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.login__link {
+  color: #000000;
+  text-decoration: none;
+}

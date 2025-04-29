@@ -1,0 +1,36 @@
+{{!< main}}
+
+<div class="login">
+  <h2 class="login__title">Signup</h2>
+
+  {{#if error}}
+    <p class="login__error">{{error}}</p>
+  {{/if}}
+
+  <form method="POST" action="/auth/signup">
+    <div class="login__input-wrapper">
+      <input
+        name="username"
+        type="text"
+        class="login__input"
+        placeholder="Username"
+        required
+      />
+    </div>
+    <div class="login__input-wrapper">
+      <input
+        name="password"
+        type="password"
+        class="login__input"
+        placeholder="Password"
+        required
+      />
+    </div>
+    <div class="login__input-wrapper">
+      <button type="submit" class="login__submit-button">Register</button>
+    </div>
+    <div class="login__links">
+      <a href="/auth/login" class="login__link">Or, Login</a>
+    </div>
+  </form>
+</div>

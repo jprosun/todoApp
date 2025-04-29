@@ -1,0 +1,48 @@
+{{!< main}}
+
+<link rel="stylesheet" href="/css/inputTask.css" />
+
+<div class="todo-app__container">
+  <h1 class="todo-app__title">
+    To do list
+    <label class="todo-app__username">{{username}}</label>
+  </h1>
+
+  <div class="todo-app__task-box">
+    <div class="todo-app__search-bar">
+      <input
+        type="text"
+        class="todo-app__task"
+        placeholder="Add a new task..."
+        required
+      />
+      <button type="submit" class="todo-app__add-button">Add</button>
+    </div>
+    <ul class="todo-app__list-container"></ul>
+  </div>
+
+  <button class="todo-app__logout">
+    <img src="/image/logout.png" alt="Logout" />
+  </button>
+</div>
+
+<div id="editModal" class="todo-app__modal">
+  <div class="todo-app__modal-content">
+    <div class="todo-app__input-box">
+      <div class="todo-app__input-container">
+        <input
+          type="text"
+          id="editInput"
+          placeholder=" "
+          class="todo-app__form-input"
+        />
+      </div>
+      <div class="todo-app__btn-container">
+        <button id="saveEdit" class="todo-app__save-edit">Save</button>
+        <button id="cancelEdit" class="todo-app__cancel-edit">Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="/js/index.js"></script>
