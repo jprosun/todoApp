@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.use((req, res, next) => {
     if (!req.session.user) {
-        return res.status(401).json({ success: false, message: 'Bạn cần đăng nhập' });
+        return res.redirect('/auth/login');
     }
     next();
 });
@@ -12,83 +12,103 @@ router.use((req, res, next) => {
 router.get('/', async (req, res) => {
     try {
         const userId = req.session.user.id;
-        const { rows } = await pool.query(
+        const { rows: tasks } = await pool.query(
             'SELECT id, text, checked FROM todos WHERE user_id = $1 ORDER BY id',
             [userId]
         );
-        res.json({ success: true, todos: rows });
+        res.render('todos/todo', {
+            title: 'Your Tasks',
+            username: req.session.user.username,
+            tasks,
+            styles: ['/css/inputTask.css'],
+            scripts: [{ src: '/js/index.js', type: 'module' }]
+        });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: 'Lỗi server khi lấy danh sách' });
+        console.error('Error fetching tasks:', err);
+        res.status(500).send('Lỗi server, không thể tải tasks.');
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/add', async (req, res) => {
     const { text } = req.body;
-    if (!text) {
-        return res.status(400).json({ success: false, message: 'Text is required' });
+    if (!text || !text.trim()) {
+        return res.redirect('/todos');
     }
     try {
-        const userId = req.session.user.id;
-        const { rows } = await pool.query(
-            'INSERT INTO todos(user_id, text) VALUES($1, $2) RETURNING id, text, checked',
-            [userId, text]
+        await pool.query(
+            'INSERT INTO todos(user_id, text) VALUES($1, $2)',
+            [req.session.user.id, text.trim()]
         );
-        res.json({ success: true, todo: rows[0] });
+        res.redirect('/todos');
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: 'Lỗi server khi tạo task' });
+        console.error('Error creating task:', err);
+        res.status(500).send('Lỗi server khi tạo task');
     }
 });
 
-router.put('/:id', async (req, res) => {
-    const { id } = req.params;
-    const { text, checked } = req.body;
-    if (text === undefined && checked === undefined) {
-        return res.status(400).json({ success: false, message: 'No fields to update' });
-    }
+router.post('/:id/toggle', async (req, res) => {
+    const id = req.params.id;
     try {
-        const userId = req.session.user.id;
-        const fields = [];
-        const values = [];
-        let idx = 1;
-        if (text !== undefined) {
-            fields.push(`text = $${idx}`);
-            values.push(text);
-            idx++;
-        }
-        if (checked !== undefined) {
-            fields.push(`checked = $${idx}`);
-            values.push(checked);
-            idx++;
-        }
-        values.push(id, userId);
-        const query = `UPDATE todos SET ${fields.join(', ')} WHERE id = $${idx} AND user_id = $${idx + 1} RETURNING id, text, checked`;
-        const { rows } = await pool.query(query, values);
-        if (rows.length === 0) {
-            return res.status(404).json({ success: false, message: 'Task not found' });
-        }
-        res.json({ success: true, todo: rows[0] });
+        await pool.query(
+            'UPDATE todos SET checked = NOT checked WHERE id = $1 AND user_id = $2',
+            [id, req.session.user.id]
+        );
+        res.redirect('/todos');
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: 'Lỗi server khi cập nhật' });
+        console.error('Error toggling task:', err);
+        res.status(500).send('Lỗi server khi cập nhật task');
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.post('/:id/delete', async (req, res) => {
+    const id = req.params.id;
     try {
-        const userId = req.session.user.id;
-        const { rowCount } = await pool.query(
+        await pool.query(
             'DELETE FROM todos WHERE id = $1 AND user_id = $2',
-            [req.params.id, userId]
+            [id, req.session.user.id]
         );
-        if (rowCount === 0) {
-            return res.status(404).json({ success: false, message: 'Task not found' });
-        }
-        res.json({ success: true });
+        res.redirect('/todos');
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: 'Lỗi server khi xóa task' });
+        console.error('Error deleting task:', err);
+        res.status(500).send('Lỗi server khi xóa task');
+    }
+});
+
+router.get('/:id/edit', async (req, res) => {
+    const id = req.params.id;
+    try {
+        const { rows } = await pool.query(
+            'SELECT id, text FROM todos WHERE id = $1 AND user_id = $2',
+            [id, req.session.user.id]
+        );
+        if (!rows.length) return res.redirect('/todos');
+        res.render('todos/edit', {
+            title: 'Edit Task',
+            task: rows[0],
+            styles: ['/css/inputTask.css'],
+            scripts: []
+        });
+    } catch (err) {
+        console.error('Error loading edit page:', err);
+        res.status(500).send('Lỗi server khi tải trang chỉnh sửa');
+    }
+});
+
+router.post('/:id/edit', async (req, res) => {
+    const id = req.params.id;
+    const { text } = req.body;
+    if (!text || !text.trim()) {
+        return res.redirect(`/todos/${id}/edit`);
+    }
+    try {
+        await pool.query(
+            'UPDATE todos SET text = $1 WHERE id = $2 AND user_id = $3',
+            [text.trim(), id, req.session.user.id]
+        );
+        res.redirect('/todos');
+    } catch (err) {
+        console.error('Error saving edit:', err);
+        res.status(500).send('Lỗi server khi lưu chỉnh sửa');
     }
 });
 

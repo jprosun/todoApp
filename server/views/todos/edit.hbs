@@ -1,0 +1,22 @@
+{{!< main}}
+<link rel="stylesheet" href="/css/edit.css" />
+
+<div class="todo-app__container">
+  <h2>Edit Task</h2>
+  <form
+    id="editForm"
+    method="POST"
+    action="/todos/{{task.id}}/edit"
+    data-id="{{task.id}}"
+  >
+    <input
+      name="text"
+      type="text"
+      class="todo-app__form-input"
+      value="{{task.text}}"
+      required
+    />
+    <button type="submit" class="todo-app__save-edit">Save</button>
+    <a href="/todos" class="todo-app__cancel-edit">Back</a>
+  </form>
+</div>

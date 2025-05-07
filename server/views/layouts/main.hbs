@@ -1,24 +1,26 @@
-{{!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>{{title}}</title>
 
-  {{!-- Loop qua các CSS được truyền vào --}}
-  {{#each styles}}
-    <link rel="stylesheet" href="{{this}}"/>
-  {{/each}}
+  {{#if styles}}
+    {{#each styles}}
+      <link rel="stylesheet" href="{{this}}"/>
+    {{/each}}
+  {{/if}}
 </head>
 <body>
   {{{body}}}
 
-  {{!-- Loop qua các JS được truyền vào --}}
-  {{#each scripts}}
-    <script
-      src="{{this.src}}"
-      {{#if this.type}}type="{{this.type}}"{{/if}}
-    ></script>
-  {{/each}}
+  {{#if scripts}}
+    {{#each scripts}}
+      <script
+        src="{{this.src}}"
+        {{#if this.type}}type="{{this.type}}"{{/if}}
+      ></script>
+    {{/each}}
+  {{/if}}
 </body>
-</html> --}}
+</html>

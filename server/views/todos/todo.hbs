@@ -1,5 +1,4 @@
 {{!< main}}
-
 <link rel="stylesheet" href="/css/inputTask.css" />
 
 <div class="todo-app__container">
@@ -9,39 +8,56 @@
   </h1>
 
   <div class="todo-app__task-box">
-    <div class="todo-app__search-bar">
+    <form class="todo-app__search-bar" method="POST" action="/todos/add">
       <input
+        name="text"
         type="text"
         class="todo-app__task"
         placeholder="Add a new task..."
         required
       />
       <button type="submit" class="todo-app__add-button">Add</button>
-    </div>
-    <ul class="todo-app__list-container"></ul>
+    </form>
+
+    <ul class="todo-app__list-container">
+      {{#each tasks}}
+        <li data-id="{{id}}" class="todo-app__list-item {{#if checked}}todo-app__list-item--checked{{/if}}">
+          {{text}}
+          <form id="toggle-{{id}}" method="POST" action="/todos/{{id}}/toggle" style="display:none"></form>
+          <form class="delete-form" method="POST" action="/todos/{{id}}/delete" style="display:inline">
+            <button type="submit" class="todo-app__list-item-delete">&times;</button>
+          </form>
+        </li>
+      {{/each}}
+    </ul>
   </div>
 
-  <button class="todo-app__logout">
-    <img src="/image/logout.png" alt="Logout" />
-  </button>
+  <form method="POST" action="/auth/logout" style="display:inline">
+    <button type="submit" class="todo-app__logout">
+      <img src="/image/logout.png" alt="Logout" />
+    </button>
+  </form>
 </div>
 
+<!-- Modal edit -->
 <div id="editModal" class="todo-app__modal">
   <div class="todo-app__modal-content">
-    <div class="todo-app__input-box">
+    <form id="editForm" class="todo-app__input-box" method="POST" action="" data-id="">
       <div class="todo-app__input-container">
         <input
+          name="text"
           type="text"
           id="editInput"
-          placeholder=" "
           class="todo-app__form-input"
+          placeholder=" "
+          required
         />
       </div>
       <div class="todo-app__btn-container">
-        <button id="saveEdit" class="todo-app__save-edit">Save</button>
-        <button id="cancelEdit" class="todo-app__cancel-edit">Back</button>
+        <button type="submit" id="saveEdit" class="todo-app__save-edit">Save</button>
+        <button type="button" id="cancelEdit" class="todo-app__cancel-edit">Back</button>
       </div>
-    </div>
+    </form>
   </div>
 </div>
 
